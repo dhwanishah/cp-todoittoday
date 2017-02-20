@@ -10,19 +10,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.dhwanishah.todoittoday.MainActivity">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/etNewItem"
-        android:layout_toLeftOf="@+id/btnAddItem"
-        android:layout_toStartOf="@+id/btnAddItem"
-        android:layout_alignParentBottom="true"
-        android:hint="@string/new_task_hint"
-        android:visibility="gone" />
+    <!--<EditText-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:ems="10"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:id="@+id/etNewItem"-->
+        <!--android:layout_toLeftOf="@+id/btnAddItem"-->
+        <!--android:layout_toStartOf="@+id/btnAddItem"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:hint="@string/new_task_hint" />-->
 
     <ListView
         android:layout_width="match_parent"
@@ -33,13 +32,12 @@
         android:layout_above="@+id/btnAddItem"
         android:id="@+id/lvItems" />
 
-    <Button
-        android:text="@string/add_task_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnAddItem"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:visibility="gone" />
+    <!--<Button-->
+        <!--android:text="@string/add_task_button"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/btnAddItem"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true" />-->
 </RelativeLayout>

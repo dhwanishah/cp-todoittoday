@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     //private HashMap<String, String> mItemsArr = new HashMap<>();
     private ArrayAdapter<String> mItemsAdapter;
     private ListView mLvItems;
-    private Button mAddButton;
-    private EditText mNewItemToAdd;
+//    private Button mAddButton;
+//    private EditText mNewItemToAdd;
 
     private TodoItDbHelper mDbHelper;
     private SQLiteDatabase db;
@@ -147,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
                                     if (newRowId != -1) {
                                         mItemsAdapter.add(newItem);
                                         Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
-                                        mNewItemToAdd.setText("");
+                                        taskTitle.setText("");
+//                                        mNewItemToAdd.setText("");
                                     } else {
                                         Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
                                     }
@@ -199,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         // Initialize controls
-        mNewItemToAdd = (EditText) findViewById(R.id.etNewItem);
-        mAddButton = (Button) findViewById(R.id.btnAddItem);
+//        mNewItemToAdd = (EditText) findViewById(R.id.etNewItem);
+//        mAddButton = (Button) findViewById(R.id.btnAddItem);
         mLvItems = (ListView) findViewById(R.id.lvItems);
 
         // Initialize Database connection and items array
