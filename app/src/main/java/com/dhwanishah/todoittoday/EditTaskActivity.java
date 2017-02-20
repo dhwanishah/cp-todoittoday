@@ -20,12 +20,11 @@ public class EditTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_task);
 
         mTaskTitle = (EditText) findViewById(R.id.tvEditTaskTitle);
-        mTaskTitle.setSelection(mTaskTitle.getText().length());
         mEditButton = (Button) findViewById(R.id.btEditTaskComplete);
 
         taskIndex = getIntent().getIntExtra("currentItemIndex", -1);
         String taskTitle = getIntent().getStringExtra("currentItemData");
-        mTaskTitle.setText(taskTitle);
+        mTaskTitle.append(getIntent().getStringExtra("currentItemData"));
 
     }
 

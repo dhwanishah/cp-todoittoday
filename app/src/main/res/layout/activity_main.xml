@@ -21,7 +21,8 @@
         android:layout_toLeftOf="@+id/btnAddItem"
         android:layout_toStartOf="@+id/btnAddItem"
         android:layout_alignParentBottom="true"
-        android:hint="@string/new_task_hint" />
+        android:hint="@string/new_task_hint"
+        android:visibility="gone" />
 
     <ListView
         android:layout_width="match_parent"
@@ -39,5 +40,6 @@
         android:id="@+id/btnAddItem"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:visibility="gone" />
 </RelativeLayout>

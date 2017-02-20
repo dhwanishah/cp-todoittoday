@@ -1,12 +1,17 @@
 package com.dhwanishah.todoittoday;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -42,29 +47,29 @@ public class MainActivity extends AppCompatActivity {
 
         //deleteAll();
 
-        mAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newItem = mNewItemToAdd.getText().toString();
-                if (!newItem.equals("")) {
-                    db = mDbHelper.getWritableDatabase();
-                    ContentValues values = new ContentValues();
-                    values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
-                    //long newRowId = db.insert(MainTodoIt.TABLE_NAME, null, values);
-                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                    if (newRowId != -1) {
-                        mItemsAdapter.add(newItem);
-                        Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
-                        mNewItemToAdd.setText("");
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
-                    }
-                    db.close();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+//        mAddButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String newItem = mNewItemToAdd.getText().toString();
+//                if (!newItem.equals("")) {
+//                    db = mDbHelper.getWritableDatabase();
+//                    ContentValues values = new ContentValues();
+//                    values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
+//                    //long newRowId = db.insert(MainTodoIt.TABLE_NAME, null, values);
+//                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+//                    if (newRowId != -1) {
+//                        mItemsAdapter.add(newItem);
+//                        Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
+//                        mNewItemToAdd.setText("");
+//                    } else {
+//                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
+//                    }
+//                    db.close();
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
 
 //        mLvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 //            @Override
@@ -111,8 +116,59 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        String taskTitle = getIntent().getStringExtra("editedTitleString");
-//        Toast.makeText(getApplicationContext(), taskTitle + " e", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_task:
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
+                final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
+                builder.setView(dialogView)
+                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.e("DSF", taskTitle.getText().toString());
+                                String newItem = taskTitle.getText().toString();
+                                if (!newItem.equals("")) {
+                                    db = mDbHelper.getWritableDatabase();
+                                    ContentValues values = new ContentValues();
+                                    values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
+                                    //long newRowId = db.insert(MainTodoIt.TABLE_NAME, null, values);
+                                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                                    if (newRowId != -1) {
+                                        mItemsAdapter.add(newItem);
+                                        Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
+                                        mNewItemToAdd.setText("");
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
+                                    }
+                                    db.close();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                builder.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
