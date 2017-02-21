@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
                                         mItemsAdapter.add(newItem);
-                                        Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
                                         taskTitle.setText("");
 //                                        mNewItemToAdd.setText("");
                                     } else {
