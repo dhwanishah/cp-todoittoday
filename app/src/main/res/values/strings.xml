@@ -3,4 +3,11 @@
     <string name="add_task_button">Todoit!</string>
     <string name="new_task_hint">Get groceries, get oil changed, etc.</string>
     <string name="delete_task_button">Done</string>
+    <string name="no_tasks_textview">No tasks currently.</string>
+    <string-array name="categories">
+        <item>Personal</item>
+        <item>ToDo</item>
+        <item>Work</item>
+        <item>Misc.</item>
+    </string-array>
 </resources>

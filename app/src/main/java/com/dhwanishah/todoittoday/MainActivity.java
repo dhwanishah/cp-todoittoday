@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +28,11 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> mItems;
+    private String[] mCategories = {"Personal", "ToDo", "Work", "Misc"};
     //private HashMap<String, String> mItemsArr = new HashMap<>();
     private ArrayAdapter<String> mItemsAdapter;
     private ListView mLvItems;
+    TextView emptyText;
 //    private Button mAddButton;
 //    private EditText mNewItemToAdd;
 
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void editTask(View view) {
+        readDB();
         Log.e("mItems", mItems.toString());
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
@@ -131,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 LayoutInflater inflater = this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
                 final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
+                final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
+                //ArrayAdapter<String> categorySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mCategories);
+                //mCategoriesSpinner.setAdapter(categorySpinnerAdapter);
                 builder.setView(dialogView)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
@@ -141,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
                                     db = mDbHelper.getWritableDatabase();
                                     ContentValues values = new ContentValues();
                                     values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
+                                    values.put(MainTodoIt.COLUMN_NAME_CATEGORY, mCategoriesSpinner.getSelectedItemPosition());
                                     //long newRowId = db.insert(MainTodoIt.TABLE_NAME, null, values);
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
@@ -165,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 builder.show();
+                readDB();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -178,10 +187,13 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 int taskIndex = data.getIntExtra("taskIndex", -1);
                 String taskTitle = data.getStringExtra("editedTitleString");
-                Log.e("e", mItems.toString() + " | " + taskIndex);
+
+                int category = Integer.parseInt(data.getStringExtra("editedTaskCategory"));
+
+                Log.e("e", mItems.toString() + " | " + taskIndex + " | " + category);
                 //Toast.makeText(getApplicationContext(), taskTitle, Toast.LENGTH_LONG).show();
                 //mNewItemToAdd.setText(taskIndex + " " + taskTitle);
-                if (updateDb(mItems.get(taskIndex), taskTitle)) {
+                if (updateDb(mItems.get(taskIndex), taskTitle, category)) {
                     mItems.set(taskIndex, taskTitle);
                     mItemsAdapter.notifyDataSetChanged();
                 } else {
@@ -202,6 +214,8 @@ public class MainActivity extends AppCompatActivity {
 //        mNewItemToAdd = (EditText) findViewById(R.id.etNewItem);
 //        mAddButton = (Button) findViewById(R.id.btnAddItem);
         mLvItems = (ListView) findViewById(R.id.lvItems);
+        emptyText = (TextView)findViewById(R.id.tvNoTask);
+        mLvItems.setEmptyView(emptyText);
 
         // Initialize Database connection and items array
         mDbHelper = new TodoItDbHelper(getApplicationContext());
@@ -213,13 +227,14 @@ public class MainActivity extends AppCompatActivity {
         String[] projections = {
                 MainTodoIt._ID,
                 MainTodoIt.COLUMN_NAME_TASK,
+                MainTodoIt.COLUMN_NAME_CATEGORY,
                 MainTodoIt.COLUMN_NAME_CREATE_DATE
         };
         Cursor cursor = db.query(MainTodoIt.TABLE_NAME, projections, null, null, null, null, null);
         while(cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
             mItems.add(cursor.getString(idx));
-            Log.e("DB", cursor.getString(idx) + " : ");
+            Log.e("DB", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
         }
         if (mItemsAdapter == null) {
             mItemsAdapter = new ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
@@ -234,12 +249,32 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
-    private boolean updateDb(String originalValue, String newValue) {
+    private void readDB() {
+        db = mDbHelper.getReadableDatabase();
+        String[] projections = {
+                MainTodoIt._ID,
+                MainTodoIt.COLUMN_NAME_TASK,
+                MainTodoIt.COLUMN_NAME_CATEGORY,
+                MainTodoIt.COLUMN_NAME_CREATE_DATE
+        };
+        Cursor cursor = db.query(MainTodoIt.TABLE_NAME, projections, null, null, null, null, null);
+        while(cursor.moveToNext()) {
+            int idx = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
+            Log.e("DB_READ", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
+        }
+        cursor.close();
+        db.close();
+    }
+
+    private boolean updateDb(String originalValue, String newTaskValue, int newCategoryValue) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // New value for one column
         ContentValues values = new ContentValues();
-        values.put(MainTodoIt.COLUMN_NAME_TASK, newValue);
+        values.put(MainTodoIt.COLUMN_NAME_TASK, newTaskValue);
+        if (newCategoryValue != -1) {
+            values.put(MainTodoIt.COLUMN_NAME_CATEGORY, newCategoryValue);
+        }
 
         // Which row to update, based on the title
         String selection = MainTodoIt.COLUMN_NAME_TASK + " LIKE ?";

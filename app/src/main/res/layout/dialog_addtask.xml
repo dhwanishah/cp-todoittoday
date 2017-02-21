@@ -21,4 +21,10 @@
         android:ems="10"
         android:id="@+id/etNewTaskTitle" />
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinCategory"
+        android:entries="@array/categories" />
+
 </LinearLayout>

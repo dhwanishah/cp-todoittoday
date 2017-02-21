@@ -10,25 +10,50 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.dhwanishah.todoittoday.EditTaskActivity">
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinEditCategory"
+        android:entries="@array/categories"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/tvEditTaskTitle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Task Category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvEditTaskTitle"
+        android:layout_marginTop="20dp"
+        android:id="@+id/textView4"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
+        android:id="@+id/tvEditTaskTitle"
+        android:layout_marginTop="50dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/tvEditTaskTitle"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        android:text="Save"
+    <TextView
+        android:text="Task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvEditTaskTitle"
+        android:id="@+id/textView3"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="21dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/btEditTaskComplete"
-        android:onClick="editTaskComplete" />
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
