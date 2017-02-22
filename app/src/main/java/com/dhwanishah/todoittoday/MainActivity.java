@@ -65,12 +65,24 @@ public class MainActivity extends AppCompatActivity {
     public void editTask(View view) {
         readDB();
         //Log.e("mItems", mItems.toString());
-        Log.e("mTaskArray", mTasksArray.toString());
+        //Log.e("mTaskArray", mTasksArray.toString());
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
+        TextView taskCategoryTextView = (TextView) parent.findViewById(R.id.tvTaskCategory);
         Intent openEditTaskActivity = new Intent(getApplicationContext(), EditTaskActivity.class);
-        openEditTaskActivity.putExtra("currentItemIndex", mItems.indexOf(String.valueOf(taskTextView.getText())));
+        //openEditTaskActivity.putExtra("currentItemIndex", mTasksArray.indexOf(String.valueOf(taskTextView.getText())));
+        //String[] categoryArray = getResources().getStringArray(R.array.categories);
+        //Task currentObject = new Task(taskTextView.getText().toString(), Integer.toString(Arrays.asList(categoryArray).indexOf(taskCategoryTextView.getText().toString())));
+        int indexOf = -1;
+        for (int i = 0; i < mTasksArray.size(); i++) {
+            if (mTasksArray.get(i).getmTaskTitle().equals(taskTextView.getText().toString())) {
+                indexOf = i;
+            }
+        }
+        //Log.e("ARR", currentObject.getmTaskTitle() + " " + currentObject.getmTaskCategory() + " " + indexOf);
+        openEditTaskActivity.putExtra("currentItemIndex", indexOf);
         openEditTaskActivity.putExtra("currentItemData", String.valueOf(taskTextView.getText()));
+        openEditTaskActivity.putExtra("currentItemCategory", String.valueOf(taskCategoryTextView.getText()));
         startActivityForResult(openEditTaskActivity, 1);
     }
 
@@ -141,14 +153,22 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 int taskIndex = data.getIntExtra("taskIndex", -1);
-                String taskTitle = data.getStringExtra("editedTitleString");
+                String newTaskTitle = data.getStringExtra("editedTitleString");
+                int newCategory = Integer.parseInt(data.getStringExtra("editedTaskCategory"));
+                String[] categoryArray = getResources().getStringArray(R.array.categories);
 
-                int category = Integer.parseInt(data.getStringExtra("editedTaskCategory"));
-
-                //Log.e("e", mItems.toString() + " | " + taskIndex + " | " + category);
-                if (updateDb(mItems.get(taskIndex), taskTitle, category)) {
-                    mItems.set(taskIndex, taskTitle);
-                    mItemsAdapter.notifyDataSetChanged();
+                Log.e("e", mTasksArray.toString() + " | " + taskIndex + " | " + categoryArray[newCategory]);
+//                if (updateDb(mItems.get(taskIndex), taskTitle, category)) {
+//                    mItems.set(taskIndex, taskTitle);
+//                    mItemsAdapter.notifyDataSetChanged();
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Failed to update db.", Toast.LENGTH_LONG).show();
+//                }
+                if (updateDb(mTasksArray.get(taskIndex).getmTaskTitle(), newTaskTitle, Integer.toString(newCategory))) {
+                    mTasksArray.set(taskIndex, new Task(newTaskTitle, Integer.toString(newCategory)));
+                    //mItems.set(taskIndex, taskTitle);
+                    //mItemsAdapter.notifyDataSetChanged();
+                    mTasksArrayAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to update db.", Toast.LENGTH_LONG).show();
                 }
@@ -228,13 +248,13 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
-    private boolean updateDb(String originalValue, String newTaskValue, int newCategoryValue) {
+    private boolean updateDb(String originalValue, String newTaskValue, String newCategoryValue) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // New value for one column
         ContentValues values = new ContentValues();
         values.put(MainTodoIt.COLUMN_NAME_TASK, newTaskValue);
-        if (newCategoryValue != -1) {
+        if (newCategoryValue != null) {
             values.put(MainTodoIt.COLUMN_NAME_CATEGORY, newCategoryValue);
         }
 

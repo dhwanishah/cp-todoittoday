@@ -3,11 +3,14 @@ package com.dhwanishah.todoittoday;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.Arrays;
 
 public class EditTaskActivity extends AppCompatActivity {
 
@@ -25,6 +28,10 @@ public class EditTaskActivity extends AppCompatActivity {
 
         taskIndex = getIntent().getIntExtra("currentItemIndex", -1);
         mTaskTitle.append(getIntent().getStringExtra("currentItemData"));
+
+        String passedCategory = getIntent().getStringExtra("currentItemCategory");
+        String[] categoryArray = getResources().getStringArray(R.array.categories);
+        mTaskCategory.setSelection(Arrays.asList(categoryArray).indexOf(passedCategory));
 
     }
 
