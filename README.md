@@ -25,6 +25,7 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
+* [x] Adding an item was in a dialog box
 * [x] Categories were added for each tasks
 * [x] Design improvements on making transition easier
 * [x] Splash screen 
