@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -29,11 +28,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO: Convert edit task method to use new mTaskArrayAdapter
-
-    private ArrayList<String> mItems;
     private ArrayList<Task> mTasksArray;
-    private ArrayAdapter<String> mItemsAdapter;
     private TasksAdapter mTasksArrayAdapter;
     private ListView mLvItems;
     TextView emptyText;
@@ -45,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("All Tasks");
 
         init();
         readAndPopulateListFromDb();
@@ -64,22 +60,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void editTask(View view) {
         readDB();
-        //Log.e("mItems", mItems.toString());
-        //Log.e("mTaskArray", mTasksArray.toString());
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
         TextView taskCategoryTextView = (TextView) parent.findViewById(R.id.tvTaskCategory);
         Intent openEditTaskActivity = new Intent(getApplicationContext(), EditTaskActivity.class);
-        //openEditTaskActivity.putExtra("currentItemIndex", mTasksArray.indexOf(String.valueOf(taskTextView.getText())));
-        //String[] categoryArray = getResources().getStringArray(R.array.categories);
-        //Task currentObject = new Task(taskTextView.getText().toString(), Integer.toString(Arrays.asList(categoryArray).indexOf(taskCategoryTextView.getText().toString())));
         int indexOf = -1;
         for (int i = 0; i < mTasksArray.size(); i++) {
             if (mTasksArray.get(i).getmTaskTitle().equals(taskTextView.getText().toString())) {
                 indexOf = i;
             }
         }
-        //Log.e("ARR", currentObject.getmTaskTitle() + " " + currentObject.getmTaskCategory() + " " + indexOf);
         openEditTaskActivity.putExtra("currentItemIndex", indexOf);
         openEditTaskActivity.putExtra("currentItemData", String.valueOf(taskTextView.getText()));
         openEditTaskActivity.putExtra("currentItemCategory", String.valueOf(taskCategoryTextView.getText()));
@@ -120,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
                                     values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
-                                        //mItemsAdapter.add(taskTitleNewVal);
                                         mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
                                         taskTitle.setText("");
                                     } else {
@@ -158,16 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 String[] categoryArray = getResources().getStringArray(R.array.categories);
 
                 Log.e("e", mTasksArray.toString() + " | " + taskIndex + " | " + categoryArray[newCategory]);
-//                if (updateDb(mItems.get(taskIndex), taskTitle, category)) {
-//                    mItems.set(taskIndex, taskTitle);
-//                    mItemsAdapter.notifyDataSetChanged();
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "Failed to update db.", Toast.LENGTH_LONG).show();
-//                }
                 if (updateDb(mTasksArray.get(taskIndex).getmTaskTitle(), newTaskTitle, Integer.toString(newCategory))) {
                     mTasksArray.set(taskIndex, new Task(newTaskTitle, Integer.toString(newCategory)));
-                    //mItems.set(taskIndex, taskTitle);
-                    //mItemsAdapter.notifyDataSetChanged();
                     mTasksArrayAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to update db.", Toast.LENGTH_LONG).show();
@@ -210,14 +191,6 @@ public class MainActivity extends AppCompatActivity {
             mTasksArray.add(new Task(cursor.getString(columnTaskIndex), cursor.getString(columnTaskCategory)));
             Log.e("DB", cursor.getString(columnTaskIndex) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
         }
-//        if (mItemsAdapter == null) {
-//            mItemsAdapter = new ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
-//            mLvItems.setAdapter(mItemsAdapter);
-//        } else {
-//            mItemsAdapter.clear();
-//            mItemsAdapter.addAll(mItems);
-//            mItemsAdapter.notifyDataSetChanged();
-//        }
         if (mTasksArrayAdapter == null) {
             mTasksArrayAdapter = new TasksAdapter(this, mTasksArray); //ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
             mLvItems.setAdapter(mTasksArrayAdapter);
