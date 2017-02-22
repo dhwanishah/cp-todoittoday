@@ -22,19 +22,20 @@ import android.widget.Toast;
 
 import com.dhwanishah.todoittoday.helpers.database.TodoItDbHelper;
 import com.dhwanishah.todoittoday.helpers.database.TodoItTodayContract.MainTodoIt;
+import com.dhwanishah.todoittoday.models.Task;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    // TODO: Convert mItems to mTasksArray with custom adapter.
+
     private ArrayList<String> mItems;
+    private ArrayList<Task> mTasksArray;
     private String[] mCategories = {"Personal", "ToDo", "Work", "Misc"};
-    //private HashMap<String, String> mItemsArr = new HashMap<>();
     private ArrayAdapter<String> mItemsAdapter;
     private ListView mLvItems;
     TextView emptyText;
-//    private Button mAddButton;
-//    private EditText mNewItemToAdd;
 
     private TodoItDbHelper mDbHelper;
     private SQLiteDatabase db;
@@ -46,50 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         init();
         readAndPopulateListFromDb();
-
-        //deleteAll();
-
-//        mAddButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String newItem = mNewItemToAdd.getText().toString();
-//                if (!newItem.equals("")) {
-//                    db = mDbHelper.getWritableDatabase();
-//                    ContentValues values = new ContentValues();
-//                    values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
-//                    //long newRowId = db.insert(MainTodoIt.TABLE_NAME, null, values);
-//                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-//                    if (newRowId != -1) {
-//                        mItemsAdapter.add(newItem);
-//                        Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
-//                        mNewItemToAdd.setText("");
-//                    } else {
-//                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
-//                    }
-//                    db.close();
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-
-//        mLvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
-//                String task = String.valueOf(taskTextView.getText());
-//                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//                db.delete(MainTodoIt.TABLE_NAME,
-//                        MainTodoIt.COLUMN_NAME_TASK + " = ?",
-//                        new String[]{task});
-//                db.close();
-//                //mItems.remove(position);
-//                //delete(Integer.toString(position));
-//                //mItemsAdapter.notifyDataSetChanged();
-//                readAndPopulateListFromDb();
-//                return true;
-//            }
-//        });
     }
 
     public void deleteTask(View view) {
@@ -107,12 +64,12 @@ public class MainActivity extends AppCompatActivity {
     public void editTask(View view) {
         readDB();
         Log.e("mItems", mItems.toString());
+        Log.e("mTaskArray", mTasksArray.toString());
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
         Intent openEditTaskActivity = new Intent(getApplicationContext(), EditTaskActivity.class);
         openEditTaskActivity.putExtra("currentItemIndex", mItems.indexOf(String.valueOf(taskTextView.getText())));
         openEditTaskActivity.putExtra("currentItemData", String.valueOf(taskTextView.getText()));
-        //startActivity(openEditTaskActivity);
         startActivityForResult(openEditTaskActivity, 1);
     }
 
@@ -136,8 +93,6 @@ public class MainActivity extends AppCompatActivity {
                 final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
                 final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
                 final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
-                //ArrayAdapter<String> categorySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mCategories);
-                //mCategoriesSpinner.setAdapter(categorySpinnerAdapter);
                 builder.setView(dialogView)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
@@ -149,13 +104,10 @@ public class MainActivity extends AppCompatActivity {
                                     ContentValues values = new ContentValues();
                                     values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
                                     values.put(MainTodoIt.COLUMN_NAME_CATEGORY, mCategoriesSpinner.getSelectedItemPosition());
-                                    //long newRowId = db.insert(MainTodoIt.TABLE_NAME, null, values);
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
                                         mItemsAdapter.add(newItem);
-                                        //Toast.makeText(getApplicationContext(), "New row: " + newRowId, Toast.LENGTH_LONG).show();
                                         taskTitle.setText("");
-//                                        mNewItemToAdd.setText("");
                                     } else {
                                         Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
                                     }
@@ -191,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
                 int category = Integer.parseInt(data.getStringExtra("editedTaskCategory"));
 
                 Log.e("e", mItems.toString() + " | " + taskIndex + " | " + category);
-                //Toast.makeText(getApplicationContext(), taskTitle, Toast.LENGTH_LONG).show();
-                //mNewItemToAdd.setText(taskIndex + " " + taskTitle);
                 if (updateDb(mItems.get(taskIndex), taskTitle, category)) {
                     mItems.set(taskIndex, taskTitle);
                     mItemsAdapter.notifyDataSetChanged();
@@ -211,8 +161,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         // Initialize controls
-//        mNewItemToAdd = (EditText) findViewById(R.id.etNewItem);
-//        mAddButton = (Button) findViewById(R.id.btnAddItem);
         mLvItems = (ListView) findViewById(R.id.lvItems);
         emptyText = (TextView)findViewById(R.id.tvNoTask);
         mLvItems.setEmptyView(emptyText);

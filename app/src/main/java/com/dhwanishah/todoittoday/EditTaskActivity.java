@@ -12,7 +12,6 @@ import android.widget.Toast;
 public class EditTaskActivity extends AppCompatActivity {
 
     EditText mTaskTitle;
-//    Button mEditButton;
     Spinner mTaskCategory;
     int taskIndex;
 
@@ -22,7 +21,6 @@ public class EditTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_task);
 
         mTaskTitle = (EditText) findViewById(R.id.tvEditTaskTitle);
-//        mEditButton = (Button) findViewById(R.id.btEditTaskComplete);
         mTaskCategory = (Spinner) findViewById(R.id.spinEditCategory);
 
         taskIndex = getIntent().getIntExtra("currentItemIndex", -1);
