@@ -6,15 +6,15 @@ package com.dhwanishah.todoittoday.models;
 
 public class Task {
     private String mTaskTitle;
-    private int mTaskCategory;
+    private String mTaskCategory;
     private String mTaskCreateDate;
 
-    public Task(String taskTitle, int taskCategory) {
+    public Task(String taskTitle, String taskCategory) {
         this.mTaskTitle = taskTitle;
         this.mTaskCategory = taskCategory;
     }
 
-    public Task(String taskTitle, int taskCategory, String taskCreateDate) {
+    public Task(String taskTitle, String taskCategory, String taskCreateDate) {
         this.mTaskTitle = taskTitle;
         this.mTaskCategory = taskCategory;
         this.mTaskCreateDate = taskCreateDate;
@@ -24,7 +24,7 @@ public class Task {
         return mTaskTitle;
     }
 
-    public int getmTaskCategory() {
+    public String getmTaskCategory() {
         return mTaskCategory;
     }
 

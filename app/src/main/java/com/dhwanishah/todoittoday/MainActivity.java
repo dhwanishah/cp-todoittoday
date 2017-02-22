@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dhwanishah.todoittoday.adapters.TasksAdapter;
 import com.dhwanishah.todoittoday.helpers.database.TodoItDbHelper;
 import com.dhwanishah.todoittoday.helpers.database.TodoItTodayContract.MainTodoIt;
 import com.dhwanishah.todoittoday.models.Task;
@@ -28,12 +29,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO: Convert mItems to mTasksArray with custom adapter.
+    // TODO: Convert edit task method to use new mTaskArrayAdapter
 
     private ArrayList<String> mItems;
     private ArrayList<Task> mTasksArray;
-    private String[] mCategories = {"Personal", "ToDo", "Work", "Misc"};
     private ArrayAdapter<String> mItemsAdapter;
+    private TasksAdapter mTasksArrayAdapter;
     private ListView mLvItems;
     TextView emptyText;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void editTask(View view) {
         readDB();
-        Log.e("mItems", mItems.toString());
+        //Log.e("mItems", mItems.toString());
         Log.e("mTaskArray", mTasksArray.toString());
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
@@ -98,15 +99,17 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.e("DSF", taskTitle.getText().toString());
-                                String newItem = taskTitle.getText().toString();
-                                if (!newItem.equals("")) {
+                                String taskTitleNewVal = taskTitle.getText().toString();
+                                String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
+                                if (!taskTitleNewVal.equals("")) {
                                     db = mDbHelper.getWritableDatabase();
                                     ContentValues values = new ContentValues();
-                                    values.put(MainTodoIt.COLUMN_NAME_TASK, newItem);
-                                    values.put(MainTodoIt.COLUMN_NAME_CATEGORY, mCategoriesSpinner.getSelectedItemPosition());
+                                    values.put(MainTodoIt.COLUMN_NAME_TASK, taskTitleNewVal);
+                                    values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
-                                        mItemsAdapter.add(newItem);
+                                        //mItemsAdapter.add(taskTitleNewVal);
+                                        mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
                                         taskTitle.setText("");
                                     } else {
                                         Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int category = Integer.parseInt(data.getStringExtra("editedTaskCategory"));
 
-                Log.e("e", mItems.toString() + " | " + taskIndex + " | " + category);
+                //Log.e("e", mItems.toString() + " | " + taskIndex + " | " + category);
                 if (updateDb(mItems.get(taskIndex), taskTitle, category)) {
                     mItems.set(taskIndex, taskTitle);
                     mItemsAdapter.notifyDataSetChanged();
@@ -170,7 +173,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readAndPopulateListFromDb() {
-        mItems = new ArrayList<>();
+        //mItems = new ArrayList<>();
+        mTasksArray = new ArrayList<>();
         db = mDbHelper.getReadableDatabase();
         String[] projections = {
                 MainTodoIt._ID,
@@ -180,17 +184,27 @@ public class MainActivity extends AppCompatActivity {
         };
         Cursor cursor = db.query(MainTodoIt.TABLE_NAME, projections, null, null, null, null, null);
         while(cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
-            mItems.add(cursor.getString(idx));
-            Log.e("DB", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
+            int columnTaskIndex = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
+            int columnTaskCategory = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY);
+            //mItems.add(cursor.getString(columnTaskIndex));
+            mTasksArray.add(new Task(cursor.getString(columnTaskIndex), cursor.getString(columnTaskCategory)));
+            Log.e("DB", cursor.getString(columnTaskIndex) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
         }
-        if (mItemsAdapter == null) {
-            mItemsAdapter = new ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
-            mLvItems.setAdapter(mItemsAdapter);
+//        if (mItemsAdapter == null) {
+//            mItemsAdapter = new ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
+//            mLvItems.setAdapter(mItemsAdapter);
+//        } else {
+//            mItemsAdapter.clear();
+//            mItemsAdapter.addAll(mItems);
+//            mItemsAdapter.notifyDataSetChanged();
+//        }
+        if (mTasksArrayAdapter == null) {
+            mTasksArrayAdapter = new TasksAdapter(this, mTasksArray); //ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
+            mLvItems.setAdapter(mTasksArrayAdapter);
         } else {
-            mItemsAdapter.clear();
-            mItemsAdapter.addAll(mItems);
-            mItemsAdapter.notifyDataSetChanged();
+            mTasksArrayAdapter.clear();
+            mTasksArrayAdapter.addAll(mTasksArray);
+            mTasksArrayAdapter.notifyDataSetChanged();
         }
 
         cursor.close();
