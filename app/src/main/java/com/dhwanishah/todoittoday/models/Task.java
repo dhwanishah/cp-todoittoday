@@ -7,16 +7,19 @@ package com.dhwanishah.todoittoday.models;
 public class Task {
     private String mTaskTitle;
     private String mTaskCategory;
+    private String mTaskPriority;
     private String mTaskCreateDate;
 
-    public Task(String taskTitle, String taskCategory) {
+    public Task(String taskTitle, String taskCategory, String taskPriority) {
         this.mTaskTitle = taskTitle;
         this.mTaskCategory = taskCategory;
+        this.mTaskPriority = taskPriority;
     }
 
-    public Task(String taskTitle, String taskCategory, String taskCreateDate) {
+    public Task(String taskTitle, String taskCategory, String taskPriority, String taskCreateDate) {
         this.mTaskTitle = taskTitle;
         this.mTaskCategory = taskCategory;
+        this.mTaskPriority = taskPriority;
         this.mTaskCreateDate = taskCreateDate;
     }
 
@@ -27,6 +30,8 @@ public class Task {
     public String getmTaskCategory() {
         return mTaskCategory;
     }
+
+    public String getmTaskPriority() { return mTaskPriority; }
 
     public String getmTaskCreateDate() {
         return mTaskCreateDate;

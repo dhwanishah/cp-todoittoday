@@ -35,6 +35,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinCategory"
-        android:entries="@array/categories" />
+        android:entries="@array/categories"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Priority" />
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinPriority"
+        android:entries="@array/priorities" />
 
 </LinearLayout>

@@ -37,12 +37,17 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         // Lookup view for data population
         TextView tvTaskTitle = (TextView) convertView.findViewById(R.id.tvTaskTitle);
         TextView tvTaskCategory = (TextView) convertView.findViewById(R.id.tvTaskCategory);
+        TextView tvTaskPriority = (TextView) convertView.findViewById(R.id.tvTaskPriority);
         // Populate the data into the template view using the data object
         tvTaskTitle.setText(task.getmTaskTitle());
 
         // Get specific categories from string array and convert from number string stored in DB to friendly name
         String[] taskCategoryConversion = convertView.getResources().getStringArray(R.array.categories);
         tvTaskCategory.setText(taskCategoryConversion[Integer.parseInt(task.getmTaskCategory())]);
+
+
+        String[] taskPriorityConversion = convertView.getResources().getStringArray(R.array.priorities);
+        tvTaskPriority.setText(taskPriorityConversion[Integer.parseInt(task.getmTaskPriority())]);
         // Return the completed view to render on screen
         return convertView;
     }

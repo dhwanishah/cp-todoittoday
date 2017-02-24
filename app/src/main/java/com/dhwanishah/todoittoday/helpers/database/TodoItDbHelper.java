@@ -17,11 +17,12 @@ public class TodoItDbHelper extends SQLiteOpenHelper {
                     MainTodoIt._ID + " INTEGER PRIMARY KEY," +
                     MainTodoIt.COLUMN_NAME_TASK + " TEXT," +
                     MainTodoIt.COLUMN_NAME_CATEGORY + " TEXT," +
+                    MainTodoIt.COLUMN_NAME_PRIORITY + " TEXT," +
                     MainTodoIt.COLUMN_NAME_CREATE_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + MainTodoIt.TABLE_NAME;
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
     public static final String DATABASE_NAME = "TodoItToday.db";
 
     public TodoItDbHelper(Context context) {

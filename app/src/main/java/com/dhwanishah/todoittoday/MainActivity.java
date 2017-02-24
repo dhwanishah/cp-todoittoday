@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
         TextView taskCategoryTextView = (TextView) parent.findViewById(R.id.tvTaskCategory);
+        TextView taskPriorityTextView = (TextView) parent.findViewById(R.id.tvTaskPriority);
         Intent openEditTaskActivity = new Intent(getApplicationContext(), EditTaskActivity.class);
         int indexOf = -1;
         for (int i = 0; i < mTasksArray.size(); i++) {
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             openEditTaskActivity.putExtra("currentItemIndex", indexOf);
             openEditTaskActivity.putExtra("currentItemData", taskTextView.getText().toString());
             openEditTaskActivity.putExtra("currentItemCategory", taskCategoryTextView.getText().toString());
+            openEditTaskActivity.putExtra("currentItemPriority", taskPriorityTextView.getText().toString());
             startActivityForResult(openEditTaskActivity, 1);
         }
     }
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
                 final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
                 final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
+                final Spinner mPrioritySpinner = (Spinner) dialogView.findViewById(R.id.spinPriority);
                 builder.setView(dialogView)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
@@ -119,11 +122,13 @@ public class MainActivity extends AppCompatActivity {
                                 //Log.e("DSF", taskTitle.getText().toString());
                                 String taskTitleNewVal = taskTitle.getText().toString();
                                 String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
+                                String taskPriorityNewVal = Integer.toString(mPrioritySpinner.getSelectedItemPosition());
                                 if (!taskTitleNewVal.equals("")) {
                                     db = mDbHelper.getWritableDatabase();
                                     ContentValues values = new ContentValues();
                                     values.put(MainTodoIt.COLUMN_NAME_TASK, taskTitleNewVal);
                                     values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
+                                    values.put(MainTodoIt.COLUMN_NAME_PRIORITY, taskPriorityNewVal);
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
                                         //mTasksArray.add(new Task(taskTitleNewVal, taskCategoryNewVal));
@@ -162,11 +167,13 @@ public class MainActivity extends AppCompatActivity {
                 int taskIndex = data.getIntExtra("taskIndex", -1);
                 String newTaskTitle = data.getStringExtra("editedTitleString");
                 int newCategory = Integer.parseInt(data.getStringExtra("editedTaskCategory"));
+                int newPriority = Integer.parseInt(data.getStringExtra("editedTaskPriority"));
                 String[] categoryArray = getResources().getStringArray(R.array.categories);
+                String[] priorityArray = getResources().getStringArray(R.array.priorities);
 
-                Log.e("e", mTasksArray.toString() + " | " + taskIndex + " | " + categoryArray[newCategory]);
-                if (updateDb(mTasksArray.get(taskIndex).getmTaskTitle(), newTaskTitle, Integer.toString(newCategory))) {
-                    mTasksArray.set(taskIndex, new Task(newTaskTitle, Integer.toString(newCategory)));
+                Log.e("e", mTasksArray.toString() + " | " + taskIndex + " | " + categoryArray[newCategory] + " | " + priorityArray[newPriority]);
+                if (updateDb(mTasksArray.get(taskIndex).getmTaskTitle(), newTaskTitle, Integer.toString(newCategory), Integer.toString(newPriority))) {
+                    mTasksArray.set(taskIndex, new Task(newTaskTitle, Integer.toString(newCategory), Integer.toString(newPriority)));
                     mTasksArrayAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to update db.", Toast.LENGTH_LONG).show();
@@ -202,14 +209,16 @@ public class MainActivity extends AppCompatActivity {
                 MainTodoIt._ID,
                 MainTodoIt.COLUMN_NAME_TASK,
                 MainTodoIt.COLUMN_NAME_CATEGORY,
+                MainTodoIt.COLUMN_NAME_PRIORITY,
                 MainTodoIt.COLUMN_NAME_CREATE_DATE
         };
         Cursor cursor = db.query(MainTodoIt.TABLE_NAME, projections, null, null, null, null, null);
         while(cursor.moveToNext()) {
             int columnTaskIndex = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
             int columnTaskCategory = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY);
+            int columnTaskPriority = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_PRIORITY);
             //mItems.add(cursor.getString(columnTaskIndex));
-            mTasksArray.add(new Task(cursor.getString(columnTaskIndex), cursor.getString(columnTaskCategory)));
+            mTasksArray.add(new Task(cursor.getString(columnTaskIndex), cursor.getString(columnTaskCategory), cursor.getString(columnTaskPriority)));
             Log.e("DB", cursor.getString(columnTaskIndex) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
             Log.i("c", mTasksArray.size() + " ");
         }
@@ -232,13 +241,14 @@ public class MainActivity extends AppCompatActivity {
                 MainTodoIt._ID,
                 MainTodoIt.COLUMN_NAME_TASK,
                 MainTodoIt.COLUMN_NAME_CATEGORY,
+                MainTodoIt.COLUMN_NAME_PRIORITY,
                 MainTodoIt.COLUMN_NAME_CREATE_DATE
         };
         Cursor cursor = db.query(MainTodoIt.TABLE_NAME, projections, null, null, null, null, null);
         if (cursor.moveToNext()) {
             while (cursor.moveToNext()) {
                 int idx = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
-                Log.e("readDB", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
+                Log.e("readDB", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)) + " " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_PRIORITY)));
             }
         } else {
             Log.e("readDB", "Nothing in the database.");
@@ -247,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
-    private boolean updateDb(String originalValue, String newTaskValue, String newCategoryValue) {
+    private boolean updateDb(String originalValue, String newTaskValue, String newCategoryValue, String newPriorityValue) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // New value for one column
@@ -255,6 +265,9 @@ public class MainActivity extends AppCompatActivity {
         values.put(MainTodoIt.COLUMN_NAME_TASK, newTaskValue);
         if (newCategoryValue != null) {
             values.put(MainTodoIt.COLUMN_NAME_CATEGORY, newCategoryValue);
+        }
+        if (newPriorityValue != null) {
+            values.put(MainTodoIt.COLUMN_NAME_PRIORITY, newPriorityValue);
         }
 
         // Which row to update, based on the title

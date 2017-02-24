@@ -31,5 +31,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinEditCategory"
-        android:entries="@array/categories" />
+        android:entries="@array/categories"
+        android:layout_marginBottom="20dp" />
+    <TextView
+        android:text="Task Priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinEditCategory" />
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinEditPriority"
+        android:entries="@array/priorities" />
 </LinearLayout>

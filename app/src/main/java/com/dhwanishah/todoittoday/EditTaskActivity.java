@@ -16,6 +16,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
     EditText mTaskTitle;
     Spinner mTaskCategory;
+    Spinner mTaskPriority;
     int taskIndex;
 
     @Override
@@ -26,6 +27,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
         mTaskTitle = (EditText) findViewById(R.id.tvEditTaskTitle);
         mTaskCategory = (Spinner) findViewById(R.id.spinEditCategory);
+        mTaskPriority = (Spinner) findViewById(R.id.spinEditPriority);
 
         taskIndex = getIntent().getIntExtra("currentItemIndex", -1);
         mTaskTitle.append(getIntent().getStringExtra("currentItemData"));
@@ -33,6 +35,10 @@ public class EditTaskActivity extends AppCompatActivity {
         String passedCategory = getIntent().getStringExtra("currentItemCategory");
         String[] categoryArray = getResources().getStringArray(R.array.categories);
         mTaskCategory.setSelection(Arrays.asList(categoryArray).indexOf(passedCategory));
+
+        String passedPriority = getIntent().getStringExtra("currentItemPriority");
+        String[] priorityArray = getResources().getStringArray(R.array.priorities);
+        mTaskPriority.setSelection(Arrays.asList(priorityArray).indexOf(passedPriority));
 
     }
 
@@ -52,6 +58,7 @@ public class EditTaskActivity extends AppCompatActivity {
                     openMainActivity.putExtra("taskIndex", taskIndex);
                     openMainActivity.putExtra("editedTitleString", mTaskTitle.getText().toString());
                     openMainActivity.putExtra("editedTaskCategory", Integer.toString(mTaskCategory.getSelectedItemPosition()));
+                    openMainActivity.putExtra("editedTaskPriority", Integer.toString(mTaskPriority.getSelectedItemPosition()));
                     setResult(RESULT_OK, openMainActivity);
                     finish();
                 } else {

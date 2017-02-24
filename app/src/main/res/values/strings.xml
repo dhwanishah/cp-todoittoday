@@ -10,4 +10,10 @@
         <item>Work</item>
         <item>Misc.</item>
     </string-array>
+    <string-array name="priorities">
+        <item>1 - High</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4 - Low</item>
+    </string-array>
 </resources>

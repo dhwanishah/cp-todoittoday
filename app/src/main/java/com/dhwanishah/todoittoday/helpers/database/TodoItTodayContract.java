@@ -14,6 +14,7 @@ public final class TodoItTodayContract {
         public static final String TABLE_NAME = "todoit_data";
         public static final String COLUMN_NAME_TASK = "task";
         public static final String COLUMN_NAME_CATEGORY = "category";
+        public static final String COLUMN_NAME_PRIORITY = "priority";
         public static final String COLUMN_NAME_CREATE_DATE = "create_date";
     }
 }
