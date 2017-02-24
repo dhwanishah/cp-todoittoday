@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp">
 
@@ -8,10 +9,14 @@
         android:text="What do you want to remember?"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:fontFamily="casual"
-        android:textStyle="normal|bold" />
+        android:textStyle="normal|bold"
+        android:layout_marginBottom="20dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Task Title" />
 
     <EditText
         android:layout_width="match_parent"
@@ -19,8 +24,13 @@
         android:inputType="textPersonName"
         android:hint="@string/new_task_hint"
         android:ems="10"
-        android:id="@+id/etNewTaskTitle" />
+        android:id="@+id/etNewTaskTitle"
+        android:layout_marginBottom="20dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Task Category" />
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

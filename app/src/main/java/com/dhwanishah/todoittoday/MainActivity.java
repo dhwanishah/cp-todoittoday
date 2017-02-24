@@ -44,22 +44,34 @@ public class MainActivity extends AppCompatActivity {
 
         init();
         readAndPopulateListFromDb();
+        readDB();
     }
 
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
         String task = String.valueOf(taskTextView.getText());
+        Log.e("delete", task);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.delete(MainTodoIt.TABLE_NAME,
-                MainTodoIt.COLUMN_NAME_TASK + " = ?",
-                new String[]{task});
+//        db.delete(MainTodoIt.TABLE_NAME,
+//                MainTodoIt.COLUMN_NAME_TASK + " = ?",
+//                new String[]{task});
+
+        // Define 'where' part of query.
+                String selection = MainTodoIt.COLUMN_NAME_TASK + " LIKE ?";
+        // Specify arguments in placeholder order.
+                String[] selectionArgs = { task };
+        // Issue SQL statement.
+                db.delete(MainTodoIt.TABLE_NAME, selection, selectionArgs);
+
+
         db.close();
         readAndPopulateListFromDb();
+        //mTasksArrayAdapter.notifyDataSetChanged();
     }
 
     public void editTask(View view) {
-        readDB();
+        //readDB();
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
         TextView taskCategoryTextView = (TextView) parent.findViewById(R.id.tvTaskCategory);
@@ -67,13 +79,17 @@ public class MainActivity extends AppCompatActivity {
         int indexOf = -1;
         for (int i = 0; i < mTasksArray.size(); i++) {
             if (mTasksArray.get(i).getmTaskTitle().equals(taskTextView.getText().toString())) {
+                Log.e("beforeSendMainLoop"+i, mTasksArray.get(i).getmTaskTitle() + " " + taskTextView.getText().toString());
                 indexOf = i;
             }
         }
-        openEditTaskActivity.putExtra("currentItemIndex", indexOf);
-        openEditTaskActivity.putExtra("currentItemData", String.valueOf(taskTextView.getText()));
-        openEditTaskActivity.putExtra("currentItemCategory", String.valueOf(taskCategoryTextView.getText()));
-        startActivityForResult(openEditTaskActivity, 1);
+        Log.e("beforeSendMain", mTasksArray.size() + " " + indexOf + " " + taskTextView.getText().toString() + " " + taskCategoryTextView.getText().toString());
+        if (indexOf != -1) {
+            openEditTaskActivity.putExtra("currentItemIndex", indexOf);
+            openEditTaskActivity.putExtra("currentItemData", taskTextView.getText().toString());
+            openEditTaskActivity.putExtra("currentItemCategory", taskCategoryTextView.getText().toString());
+            startActivityForResult(openEditTaskActivity, 1);
+        }
     }
 
     @Override
@@ -100,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.e("DSF", taskTitle.getText().toString());
+                                //Log.e("DSF", taskTitle.getText().toString());
                                 String taskTitleNewVal = taskTitle.getText().toString();
                                 String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
                                 if (!taskTitleNewVal.equals("")) {
@@ -110,7 +126,9 @@ public class MainActivity extends AppCompatActivity {
                                     values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
                                     long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                                     if (newRowId != -1) {
-                                        mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+                                        //mTasksArray.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+                                        //mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+                                        readAndPopulateListFromDb();
                                         taskTitle.setText("");
                                     } else {
                                         Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
@@ -129,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 builder.show();
-                readDB();
+                //readDB();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -155,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        readAndPopulateListFromDb();
     }
 
     @Override
@@ -175,7 +194,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void readAndPopulateListFromDb() {
         //mItems = new ArrayList<>();
+        //Log.i("a", mTasksArray.size() + " ");
         mTasksArray = new ArrayList<>();
+        Log.i("b", mTasksArray.size() + " ");
         db = mDbHelper.getReadableDatabase();
         String[] projections = {
                 MainTodoIt._ID,
@@ -190,16 +211,17 @@ public class MainActivity extends AppCompatActivity {
             //mItems.add(cursor.getString(columnTaskIndex));
             mTasksArray.add(new Task(cursor.getString(columnTaskIndex), cursor.getString(columnTaskCategory)));
             Log.e("DB", cursor.getString(columnTaskIndex) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
+            Log.i("c", mTasksArray.size() + " ");
         }
         if (mTasksArrayAdapter == null) {
-            mTasksArrayAdapter = new TasksAdapter(this, mTasksArray); //ArrayAdapter<>(this, R.layout.item_todo, R.id.tvTaskTitle, mItems);
+            mTasksArrayAdapter = new TasksAdapter(this, mTasksArray);
             mLvItems.setAdapter(mTasksArrayAdapter);
         } else {
             mTasksArrayAdapter.clear();
             mTasksArrayAdapter.addAll(mTasksArray);
             mTasksArrayAdapter.notifyDataSetChanged();
         }
-
+        Log.i("d", mTasksArray.size() + " ");
         cursor.close();
         db.close();
     }
@@ -213,9 +235,13 @@ public class MainActivity extends AppCompatActivity {
                 MainTodoIt.COLUMN_NAME_CREATE_DATE
         };
         Cursor cursor = db.query(MainTodoIt.TABLE_NAME, projections, null, null, null, null, null);
-        while(cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
-            Log.e("DB_READ", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
+        if (cursor.moveToNext()) {
+            while (cursor.moveToNext()) {
+                int idx = cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_TASK);
+                Log.e("readDB", cursor.getString(idx) + " : " + cursor.getString(cursor.getColumnIndex(MainTodoIt.COLUMN_NAME_CATEGORY)));
+            }
+        } else {
+            Log.e("readDB", "Nothing in the database.");
         }
         cursor.close();
         db.close();

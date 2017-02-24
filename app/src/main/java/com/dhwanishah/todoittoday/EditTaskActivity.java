@@ -22,6 +22,7 @@ public class EditTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
+        setTitle("Edit Task");
 
         mTaskTitle = (EditText) findViewById(R.id.tvEditTaskTitle);
         mTaskCategory = (Spinner) findViewById(R.id.spinEditCategory);
@@ -44,9 +45,10 @@ public class EditTaskActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add_task:
+            case R.id.action_edit_task:
                 if (!mTaskTitle.getText().toString().equals("")) {
                     Intent openMainActivity = new Intent();
+                    Log.e("beforeSend", taskIndex + " " + mTaskTitle.getText().toString() + " " + Integer.toString(mTaskCategory.getSelectedItemPosition()));
                     openMainActivity.putExtra("taskIndex", taskIndex);
                     openMainActivity.putExtra("editedTitleString", mTaskTitle.getText().toString());
                     openMainActivity.putExtra("editedTaskCategory", Integer.toString(mTaskCategory.getSelectedItemPosition()));
