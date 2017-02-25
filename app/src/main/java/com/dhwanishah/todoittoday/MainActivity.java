@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void editTask(View view) {
         //readDB();
-        View parent = (View) view.getParent();
+        View parent = (View) view.getParent().getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
         TextView taskCategoryTextView = (TextView) parent.findViewById(R.id.tvTaskCategory);
         TextView taskPriorityTextView = (TextView) parent.findViewById(R.id.tvTaskPriority);
