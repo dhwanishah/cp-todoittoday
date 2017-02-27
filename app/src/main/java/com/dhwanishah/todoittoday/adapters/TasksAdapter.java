@@ -1,7 +1,6 @@
 package com.dhwanishah.todoittoday.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,15 +49,20 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         String[] taskPriorityConversion = convertView.getResources().getStringArray(R.array.priorities);
         String currentPriority = taskPriorityConversion[Integer.parseInt(task.getmTaskPriority())];
         String priorityTextColor = "#333333";
+        int priorityImageId = R.drawable.high_importance;
         if (currentPriority.equals("High")) {
             priorityTextColor = "#F44336";
+            priorityImageId = R.drawable.high_importance;
         } else if (currentPriority.equals("Medium")) {
             priorityTextColor = "#FF9800";
+            priorityImageId = R.drawable.medium_importance;
         } else if (currentPriority.equals("Low")) {
             priorityTextColor = "#4CAF50";
+            priorityImageId = R.drawable.low_importance;
         }
-        tvTaskPriority.setTextColor(Color.parseColor(priorityTextColor));
-        tvTaskPriority.setText(currentPriority);
+        //tvTaskPriority.setTextColor(Color.parseColor(priorityTextColor));
+        tvTaskPriority.setText("");
+        tvTaskPriority.setBackgroundResource(priorityImageId);
         // Return the completed view to render on screen
         return convertView;
     }

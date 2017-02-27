@@ -14,6 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:text="Priority"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:id="@+id/tvTaskPriority"
+            android:layout_marginRight="10dp" />
+        <TextView
             android:id="@+id/tvTaskTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,13 +50,6 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TextView
-            android:text="Priority"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvTaskPriority"
-            android:layout_marginRight="10dp" />
         <TextView
             android:text="Category"
             android:layout_width="wrap_content"

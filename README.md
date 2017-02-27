@@ -29,7 +29,7 @@ The following **additional** features are implemented:
 * [x] Categories were added for each tasks
 * [x] Design improvements on making transition easier
 * [x] Splash screen
-* [x] Color coded all the priorities
+* [x] Priorities are represented by different color coded dots
 * [x] Organized folder structure
 
 ## Video Walkthrough 
