@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.dhwanishah.todoittoday.adapters.TasksAdapter;
 import com.dhwanishah.todoittoday.helpers.database.TodoItDbHelper;
 import com.dhwanishah.todoittoday.helpers.database.TodoItTodayContract.MainTodoIt;
+import com.dhwanishah.todoittoday.helpers.global.TaskNotificationService;
 import com.dhwanishah.todoittoday.models.Task;
 
 import java.util.ArrayList;
@@ -165,51 +166,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Log.e("Settings", "Settings clicked.");
-//                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//                LayoutInflater inflater = this.getLayoutInflater();
-//                final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
-//                final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
-//                final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
-//                final Spinner mPrioritySpinner = (Spinner) dialogView.findViewById(R.id.spinPriority);
-//                builder.setView(dialogView)
-//                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                //Log.e("DSF", taskTitle.getText().toString());
-//                                String taskTitleNewVal = taskTitle.getText().toString();
-//                                String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
-//                                String taskPriorityNewVal = Integer.toString(mPrioritySpinner.getSelectedItemPosition());
-//                                if (!taskTitleNewVal.equals("")) {
-//                                    db = mDbHelper.getWritableDatabase();
-//                                    ContentValues values = new ContentValues();
-//                                    values.put(MainTodoIt.COLUMN_NAME_TASK, taskTitleNewVal);
-//                                    values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
-//                                    values.put(MainTodoIt.COLUMN_NAME_PRIORITY, taskPriorityNewVal);
-//                                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-//                                    if (newRowId != -1) {
-//                                        //mTasksArray.add(new Task(taskTitleNewVal, taskCategoryNewVal));
-//                                        //mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
-//                                        readAndPopulateListFromDb();
-//                                        taskTitle.setText("");
-//                                    } else {
-//                                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
-//                                    }
-//                                    db.close();
-//                                } else {
-//                                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
-//                                }
-//
-//                            }
-//                        })
-//                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.cancel();
-//                            }
-//                        });
-//                builder.show();
-                //readDB();
+                    TaskNotificationService notifyMe = new TaskNotificationService(this);
+                    notifyMe.createSimpleNotification(R.mipmap.ic_launcher, "Test", "body");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
