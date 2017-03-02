@@ -47,6 +47,62 @@ public class MainActivity extends AppCompatActivity {
         readDB();
     }
 
+    private void init() {
+        // Initialize controls
+        mLvItems = (ListView) findViewById(R.id.lvItems);
+        emptyText = (TextView)findViewById(R.id.tvNoTask);
+        mLvItems.setEmptyView(emptyText);
+
+        // Initialize Database connection and items array
+        mDbHelper = new TodoItDbHelper(getApplicationContext());
+    }
+
+    public void addTask(View view) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
+        final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
+        final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
+        final Spinner mPrioritySpinner = (Spinner) dialogView.findViewById(R.id.spinPriority);
+        builder.setView(dialogView)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Log.e("DSF", taskTitle.getText().toString());
+                        String taskTitleNewVal = taskTitle.getText().toString();
+                        String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
+                        String taskPriorityNewVal = Integer.toString(mPrioritySpinner.getSelectedItemPosition());
+                        if (!taskTitleNewVal.equals("")) {
+                            db = mDbHelper.getWritableDatabase();
+                            ContentValues values = new ContentValues();
+                            values.put(MainTodoIt.COLUMN_NAME_TASK, taskTitleNewVal);
+                            values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
+                            values.put(MainTodoIt.COLUMN_NAME_PRIORITY, taskPriorityNewVal);
+                            long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                            if (newRowId != -1) {
+                                //mTasksArray.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+                                //mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+                                readAndPopulateListFromDb();
+                                taskTitle.setText("");
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
+                            }
+                            db.close();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        builder.show();
+    }
+
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
         TextView taskTextView = (TextView) parent.findViewById(R.id.tvTaskTitle);
@@ -84,12 +140,12 @@ public class MainActivity extends AppCompatActivity {
                 indexOf = i;
             }
         }
-        Log.e("beforeSendMain", mTasksArray.size() + " " + indexOf + " " + taskTextView.getText().toString() + " " + taskCategoryTextView.getText().toString());
+        Log.e("beforeSendMainD", mTasksArray.size() + " " + indexOf + " " + taskTextView.getText().toString() + " " + taskCategoryTextView.getText().toString() + " : " + taskPriorityTextView.getTag());
         if (indexOf != -1) {
             openEditTaskActivity.putExtra("currentItemIndex", indexOf);
             openEditTaskActivity.putExtra("currentItemData", taskTextView.getText().toString());
             openEditTaskActivity.putExtra("currentItemCategory", taskCategoryTextView.getText().toString());
-            openEditTaskActivity.putExtra("currentItemPriority", taskPriorityTextView.getText().toString());
+            openEditTaskActivity.putExtra("currentItemPriority", taskPriorityTextView.getTag().toString());
             startActivityForResult(openEditTaskActivity, 1);
         }
     }
@@ -108,50 +164,51 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add_task:
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = this.getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
-                final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
-                final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
-                final Spinner mPrioritySpinner = (Spinner) dialogView.findViewById(R.id.spinPriority);
-                builder.setView(dialogView)
-                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Log.e("DSF", taskTitle.getText().toString());
-                                String taskTitleNewVal = taskTitle.getText().toString();
-                                String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
-                                String taskPriorityNewVal = Integer.toString(mPrioritySpinner.getSelectedItemPosition());
-                                if (!taskTitleNewVal.equals("")) {
-                                    db = mDbHelper.getWritableDatabase();
-                                    ContentValues values = new ContentValues();
-                                    values.put(MainTodoIt.COLUMN_NAME_TASK, taskTitleNewVal);
-                                    values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
-                                    values.put(MainTodoIt.COLUMN_NAME_PRIORITY, taskPriorityNewVal);
-                                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                                    if (newRowId != -1) {
-                                        //mTasksArray.add(new Task(taskTitleNewVal, taskCategoryNewVal));
-                                        //mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
-                                        readAndPopulateListFromDb();
-                                        taskTitle.setText("");
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
-                                    }
-                                    db.close();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
-                                }
-
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                builder.show();
+            case R.id.action_settings:
+                Log.e("Settings", "Settings clicked.");
+//                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                LayoutInflater inflater = this.getLayoutInflater();
+//                final View dialogView = inflater.inflate(R.layout.dialog_addtask, null);
+//                final EditText taskTitle = (EditText) dialogView.findViewById(R.id.etNewTaskTitle);
+//                final Spinner mCategoriesSpinner = (Spinner) dialogView.findViewById(R.id.spinCategory);
+//                final Spinner mPrioritySpinner = (Spinner) dialogView.findViewById(R.id.spinPriority);
+//                builder.setView(dialogView)
+//                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                //Log.e("DSF", taskTitle.getText().toString());
+//                                String taskTitleNewVal = taskTitle.getText().toString();
+//                                String taskCategoryNewVal = Integer.toString(mCategoriesSpinner.getSelectedItemPosition());
+//                                String taskPriorityNewVal = Integer.toString(mPrioritySpinner.getSelectedItemPosition());
+//                                if (!taskTitleNewVal.equals("")) {
+//                                    db = mDbHelper.getWritableDatabase();
+//                                    ContentValues values = new ContentValues();
+//                                    values.put(MainTodoIt.COLUMN_NAME_TASK, taskTitleNewVal);
+//                                    values.put(MainTodoIt.COLUMN_NAME_CATEGORY, taskCategoryNewVal);
+//                                    values.put(MainTodoIt.COLUMN_NAME_PRIORITY, taskPriorityNewVal);
+//                                    long newRowId = db.insertWithOnConflict(MainTodoIt.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+//                                    if (newRowId != -1) {
+//                                        //mTasksArray.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+//                                        //mTasksArrayAdapter.add(new Task(taskTitleNewVal, taskCategoryNewVal));
+//                                        readAndPopulateListFromDb();
+//                                        taskTitle.setText("");
+//                                    } else {
+//                                        Toast.makeText(getApplicationContext(), "Something went wrong, could not save.", Toast.LENGTH_LONG).show();
+//                                    }
+//                                    db.close();
+//                                } else {
+//                                    Toast.makeText(getApplicationContext(), "Enter a value first, na?!", Toast.LENGTH_LONG).show();
+//                                }
+//
+//                            }
+//                        })
+//                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.cancel();
+//                            }
+//                        });
+//                builder.show();
                 //readDB();
                 return true;
             default:
@@ -187,16 +244,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         mDbHelper.close();
         super.onDestroy();
-    }
-
-    private void init() {
-        // Initialize controls
-        mLvItems = (ListView) findViewById(R.id.lvItems);
-        emptyText = (TextView)findViewById(R.id.tvNoTask);
-        mLvItems.setEmptyView(emptyText);
-
-        // Initialize Database connection and items array
-        mDbHelper = new TodoItDbHelper(getApplicationContext());
     }
 
     private void readAndPopulateListFromDb() {

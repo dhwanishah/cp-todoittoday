@@ -31,6 +31,7 @@ The following **additional** features are implemented:
 * [x] Splash screen
 * [x] Priorities are represented by different color coded dots
 * [x] Organized folder structure
+* [x] Used FloatingActionButtons widget from Google to improve experience
 
 ## Video Walkthrough 
 

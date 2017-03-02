@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -42,6 +43,21 @@ public class EditTaskActivity extends AppCompatActivity {
 
     }
 
+    public void saveEditedTask(View view) {
+        if (!mTaskTitle.getText().toString().equals("")) {
+            Intent openMainActivity = new Intent();
+            Log.e("beforeSend", taskIndex + " " + mTaskTitle.getText().toString() + " " + Integer.toString(mTaskCategory.getSelectedItemPosition()));
+            openMainActivity.putExtra("taskIndex", taskIndex);
+            openMainActivity.putExtra("editedTitleString", mTaskTitle.getText().toString());
+            openMainActivity.putExtra("editedTaskCategory", Integer.toString(mTaskCategory.getSelectedItemPosition()));
+            openMainActivity.putExtra("editedTaskPriority", Integer.toString(mTaskPriority.getSelectedItemPosition()));
+            setResult(RESULT_OK, openMainActivity);
+            finish();
+        } else {
+            Toast.makeText(getApplicationContext(), "Cannot save an empty task.", Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_task_menu, menu);
@@ -50,23 +66,24 @@ public class EditTaskActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_edit_task:
-                if (!mTaskTitle.getText().toString().equals("")) {
-                    Intent openMainActivity = new Intent();
-                    Log.e("beforeSend", taskIndex + " " + mTaskTitle.getText().toString() + " " + Integer.toString(mTaskCategory.getSelectedItemPosition()));
-                    openMainActivity.putExtra("taskIndex", taskIndex);
-                    openMainActivity.putExtra("editedTitleString", mTaskTitle.getText().toString());
-                    openMainActivity.putExtra("editedTaskCategory", Integer.toString(mTaskCategory.getSelectedItemPosition()));
-                    openMainActivity.putExtra("editedTaskPriority", Integer.toString(mTaskPriority.getSelectedItemPosition()));
-                    setResult(RESULT_OK, openMainActivity);
-                    finish();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Cannot save an empty task.", Toast.LENGTH_LONG).show();
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+//        switch (item.getItemId()) {
+//            case R.id.action_edit_task:
+//                if (!mTaskTitle.getText().toString().equals("")) {
+//                    Intent openMainActivity = new Intent();
+//                    Log.e("beforeSend", taskIndex + " " + mTaskTitle.getText().toString() + " " + Integer.toString(mTaskCategory.getSelectedItemPosition()));
+//                    openMainActivity.putExtra("taskIndex", taskIndex);
+//                    openMainActivity.putExtra("editedTitleString", mTaskTitle.getText().toString());
+//                    openMainActivity.putExtra("editedTaskCategory", Integer.toString(mTaskCategory.getSelectedItemPosition()));
+//                    openMainActivity.putExtra("editedTaskPriority", Integer.toString(mTaskPriority.getSelectedItemPosition()));
+//                    setResult(RESULT_OK, openMainActivity);
+//                    finish();
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Cannot save an empty task.", Toast.LENGTH_LONG).show();
+//                }
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+        return super.onOptionsItemSelected(item);
     }
 }

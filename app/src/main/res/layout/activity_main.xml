@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -43,6 +44,17 @@
         android:paddingBottom="10dp"
         tools:textStyle="bold" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorPrimaryDark"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        android:onClick="addTask" />
+
     <!--<Button-->
         <!--android:text="@string/add_task_button"-->
         <!--android:layout_width="wrap_content"-->
@@ -51,4 +63,4 @@
         <!--android:layout_alignParentBottom="true"-->
         <!--android:layout_alignParentRight="true"-->
         <!--android:layout_alignParentEnd="true" />-->
-</RelativeLayout>
+</FrameLayout>
